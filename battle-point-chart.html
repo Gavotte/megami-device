@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        .chart-container {
+            position: relative;
+            background-color: #ccc;
+            width: 448px;
+            height: 408px;
+        }
+        .chart-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .chart-body {
+            margin: 84px 0 0 82px;
+            padding: 0;
+            width: 284px;
+            height: 284px;
+        }
+        .chart-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .chart-total {
+            position: absolute;
+            margin: 8px 0 0 284px;
+            background-color: #ccc;
+            opacity: 0.8;
+            width: 155px;
+            height: 32px;
+        }
+        .chart-input {
+            margin-top: 1em;
+        }
+        .chart-input-params {
+            width: 3em;
+        }
+        </style>
+</head>
+
+<body>
+    <div class="chart-container">
+        <div class="chart-background">
+            <img src="./images/battle-point-background.png" />
+        </div>
+        <div class="chart-content">
+            <div class="chart-body">
+                <canvas id="chart-001" class="chart"></canvas>
+            </div>
+        </div>
+        <div id="chart-total-001" class="chart-total"></div>
+    </div>
+    <div class="chart-input">
+        <form id="chart-input-form">
+            <input type="number" class="chart-input-params" id="chart-input-params-01" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-02" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-03" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-04" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-05" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-06" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-07" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-08" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-09" value="0" />
+            <input type="number" class="chart-input-params" id="chart-input-params-10" value="0" />
+        </form>
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script>
+        var ctx = document.getElementById("chart-001").getContext("2d");
+        var data = {
+            labels: [
+                "近距離戦闘", "中距離戦闘", "遠距離戦闘", "装甲・防御", "重量　　　",
+                "稼働時間　", "隠密　　　", "索敵　　　", "空中機動　", "地上機動　"],
+            datasets: [
+                {
+                    label: "MEGAMI's Battle Points",
+                    backgroundColor: "rgba(255,0,0,0.8)",
+                    borderColor: "rgba(255,0,0,1)",
+                    borderWidth: 1,
+                    pointBackgroundColor: "rgba(255,0,0,0)",
+                    pointBorderColor: "rgba(255,0,0,0)",
+                    pointHoverBackgroundColor: "rgba(255,0,0,1)",
+                    pointHoverBorderColor: "rgba(255,0,0,1)",
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ]
+        };
+        var options = {
+            responsive: true,
+            padding: 0,
+            title: {
+                display: false
+            },
+            legend: {
+                display: false
+            }, scale: {
+                display: false,
+                gridLines: {
+                    display: false,
+                    drawBorder: false,
+                },
+                scaleLabel: {
+                    display: false
+                },
+                ticks: {
+                    display: false,
+                    max: 100,
+                    min: -15,
+                    stepSize: 1
+                },
+                beforeFit: function (scale) {
+                },
+                afterFit: function (scale) {
+                    scale.drawingArea = scale.height / 2;
+                    scale.xCenter = scale.width / 2;
+                    scale.yCenter = scale.height / 2;
+                }
+            }
+        };
+        var myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: data,
+            options: options
+        });
+        var currentTotalPt = 0;
+        var targetTotalPt = 0;
+        var setTotalPtInternal = function (totalPt) {
+            // XXX Font image
+            currentTotalPt = totalPt;
+            totalArea.textContent = "TOTAL " + totalPt + " pt";
+        }
+        var setTotalPt = function (totalPt, animate, animeSpeed) {
+            animeSpeed = animeSpeed | 10;
+            targetTotalPt = totalPt;
+            if (animate && targetTotalPt != currentTotalPt) {
+                var diff = targetTotalPt > currentTotalPt ? 1 : -1;
+                setTotalPtInternal(currentTotalPt + diff);
+                if (targetTotalPt != currentTotalPt) {
+                    setTimeout(function () {
+                        setTotalPt(totalPt, animate, animeSpeed);
+                    }, animeSpeed);
+                }
+            } else {
+                setTotalPtInternal(totalPt);
+            }
+        }
+        var updateData = function () {
+            var newData = [];
+            var totalPt = 0;
+            Array.prototype.forEach.call(document.getElementsByClassName("chart-input-params"), function (x) {
+                var value = x.value * 1;
+                newData.push(value);
+                totalPt += value;
+            });
+            data.datasets[0].data = newData;
+            myRadarChart.update();
+            setTotalPt(totalPt, true);
+            saveUrlParameter(newData)
+        }
+        function saveUrlParameter(params) {
+            var urlParams = "params=" + params.join(",");
+            window.location.hash = urlParams;
+        }
+        function loadUrlParameter() {
+            var params = getParameterByName("params");
+            if (params) {
+                var values = params.split(",");
+                var inputs = document.getElementsByClassName("chart-input-params");
+                for (var i = 0; i < values.length && i < inputs.length; i++) {
+                    inputs.item(i).value = values[i];
+                }
+            }
+            updateData();
+        }
+        var totalArea = document.getElementById("chart-total-001");
+        var inputForm = document.getElementById("chart-input-form");
+        inputForm.onchange = updateData;
+    </script>
+<script>
+        function getParameterByName(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[#&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        loadUrlParameter();
+</script>
+</body>
+
+</html>
