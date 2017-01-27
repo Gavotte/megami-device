@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <title>BATTLE POINT</title>
     <style type="text/css">
+        @font-face {
+	        font-family: 'DSEG7Classic';
+	        src: url(./images/DSEG7Classic-regular.woff);
+        }
         .chart-container {
             position: relative;
             background-color: #ccc;
@@ -26,14 +30,18 @@
             position: absolute;
             width: 100%;
             height: 100%;
-        }
+        }   
         .chart-total {
             position: absolute;
-            margin: 8px 0 0 284px;
-            background-color: #ccc;
+            margin:15px 0 0 345px;
+            text-align: right;
+            background-color: #333;
+            color: #f0f0f0;
+	        font-family: DSEG7Classic;
+            font-size: 20px;
             opacity: 0.8;
-            width: 155px;
-            height: 32px;
+            width: 64px;
+            height: 20px;
         }
         .chart-input {
             margin-top: 1em;
@@ -70,8 +78,17 @@
             <input type="number" class="chart-input-params" id="chart-input-params-10" min="0" max="100" step="10" value="0" />
         </form>
     </div>
+    <div class="chart-output">
+        <button id="chart-output-to-clipboad">Copy to clipboard</button>
+        <div>
+            <img id="chart-output-image" title="output-image-title" alt="output-image-alt" />
+        </div>
+    </div>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script>
+        var inputForm = document.getElementById("chart-input-form");
+        var copyButton = document.getElementById("chart-output-to-clipboad")
+        var totalArea = document.getElementById("chart-total-001");
         var ctx = document.getElementById("chart-001").getContext("2d");
         var data = {
             labels: [
@@ -133,7 +150,7 @@
         var setTotalPtInternal = function (totalPt) {
             // XXX Font image
             currentTotalPt = totalPt;
-            totalArea.textContent = "TOTAL " + totalPt + " pt";
+            totalArea.textContent = ("0000" + totalPt).slice(-4);;
         }
         var setTotalPt = function (totalPt, animate, animeSpeed) {
             animeSpeed = animeSpeed | 10;
@@ -163,11 +180,11 @@
             setTotalPt(totalPt, true);
             saveUrlParameter(newData)
         }
-        function saveUrlParameter(params) {
+        var saveUrlParameter = function saveUrlParameter(params) {
             var urlParams = "params=" + params.join(",");
             window.location.hash = urlParams;
         }
-        function loadUrlParameter() {
+        var loadUrlParameter = function () {
             var params = getParameterByName("params");
             if (params) {
                 var values = params.split(",");
@@ -178,9 +195,41 @@
             }
             updateData();
         }
-        var totalArea = document.getElementById("chart-total-001");
-        var inputForm = document.getElementById("chart-input-form");
+        // http://stackoverflow.com/questions/33175909/copy-image-to-clipboard
+        // http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+        selectElement = function (element) {
+            var doc = document;
+            if (doc.body.createTextRange) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(element);
+                range.select();
+            } else if (window.getSelection) {
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(element);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+        var copyToClipboad = function (e) {
+            // XXX 動的に色々合成した要素にする
+            var targetElement = document.getElementById("chart-001");
+            //var targetElement = document.getElementById("chart-input-form");
+            targetElement = document.getElementById("chart-output-image")
+            targetElement.src = ctx.canvas.toDataURL();
+            selectElement(targetElement.parentElement);
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Copying text command was ' + msg);
+            } catch (err) {
+                console.log('Oops, unable to copy');
+            }
+            //window.getSelection().removeAllRanges();
+        }
         inputForm.onchange = updateData;
+        copyButton.onclick = copyToClipboad;
     </script>
 <script>
         function getParameterByName(name, url) {
