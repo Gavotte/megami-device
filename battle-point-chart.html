@@ -55,7 +55,7 @@
 <body>
     <div class="chart-container">
         <div class="chart-background">
-            <img src="./images/battle-point-background.png" />
+            <img id="chart-background-001" crossorigin="anonymous" src="./images/battle-point-background.png" />
         </div>
         <div class="chart-content">
             <div class="chart-body">
@@ -79,15 +79,15 @@
         </form>
     </div>
     <div class="chart-output">
-        <button id="chart-output-to-clipboad">Copy to clipboard</button>
+        <button id="chart-output-create">Create Image</button>
         <div>
-            <img id="chart-output-image" title="output-image-title" alt="output-image-alt" />
+            <img id="chart-output-image" crossorigin="anonymous" title="output-image-title" alt="output-image-alt" />
         </div>
     </div>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script>
         var inputForm = document.getElementById("chart-input-form");
-        var copyButton = document.getElementById("chart-output-to-clipboad")
+        var createButton = document.getElementById("chart-output-create")
         var totalArea = document.getElementById("chart-total-001");
         var ctx = document.getElementById("chart-001").getContext("2d");
         var data = {
@@ -150,7 +150,7 @@
         var setTotalPtInternal = function (totalPt) {
             // XXX Font image
             currentTotalPt = totalPt;
-            totalArea.textContent = ("0000" + totalPt).slice(-4);;
+            totalArea.textContent = ("0000" + totalPt).slice(-4);
         }
         var setTotalPt = function (totalPt, animate, animeSpeed) {
             animeSpeed = animeSpeed | 10;
@@ -166,24 +166,31 @@
             } else {
                 setTotalPtInternal(totalPt);
             }
-        }
-        var updateData = function () {
-            var newData = [];
+        };
+        var getTotalPt = function() {
             var totalPt = 0;
             Array.prototype.forEach.call(document.getElementsByClassName("chart-input-params"), function (x) {
                 var value = x.value * 1;
-                newData.push(value);
                 totalPt += value;
+            });
+            return totalPt;
+        }
+        var updateData = function () {
+            var newData = [];
+            var totalPt = getTotalPt();
+            Array.prototype.forEach.call(document.getElementsByClassName("chart-input-params"), function (x) {
+                var value = x.value * 1;
+                newData.push(value);
             });
             data.datasets[0].data = newData;
             myRadarChart.update();
             setTotalPt(totalPt, true);
             saveUrlParameter(newData)
-        }
+        };
         var saveUrlParameter = function saveUrlParameter(params) {
             var urlParams = "params=" + params.join(",");
             window.location.hash = urlParams;
-        }
+        };
         var loadUrlParameter = function () {
             var params = getParameterByName("params");
             if (params) {
@@ -194,42 +201,42 @@
                 }
             }
             updateData();
-        }
-        // http://stackoverflow.com/questions/33175909/copy-image-to-clipboard
-        // http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-        selectElement = function (element) {
-            var doc = document;
-            if (doc.body.createTextRange) {
-                var range = document.body.createTextRange();
-                range.moveToElementText(element);
-                range.select();
-            } else if (window.getSelection) {
-                var selection = window.getSelection();
-                var range = document.createRange();
-                range.selectNodeContents(element);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        }
-        var copyToClipboad = function (e) {
-            // XXX 動的に色々合成した要素にする
-            var targetElement = document.getElementById("chart-001");
-            //var targetElement = document.getElementById("chart-input-form");
-            targetElement = document.getElementById("chart-output-image")
-            targetElement.src = ctx.canvas.toDataURL();
-            selectElement(targetElement.parentElement);
+        };
+        var contextToImage = function (context) {
+            var image = new Image;
+            image.setAttribute('crossOrigin', 'anonymous');
+            image.src = context.canvas.toDataURL();
+            return image;
+        };
+        var createMixedImate = function (e) {
+            // 動的に色々合成した要素にする
+            // XXX 後から合成は筋が悪い気はする
+            var chartElement = document.getElementById("chart-001");
+            var background = document.getElementById("chart-background-001");
+            var targetElement = document.getElementById("chart-output-image");
 
-            try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-            } catch (err) {
-                console.log('Oops, unable to copy');
-            }
-            //window.getSelection().removeAllRanges();
-        }
+            // XXX サイズ、位置を一元管理したい
+            var mixCtx = document.createElement('canvas').getContext('2d');
+            mixCtx.canvas.width = 448;
+            mixCtx.canvas.height = 408;
+            mixCtx.canvas.setAttribute('crossOrigin', 'anonymous');
+
+            mixCtx.drawImage(background, 0, 0);
+
+            mixCtx.drawImage(contextToImage(ctx), 84, 82);
+
+            var totalPt = getTotalPt();
+            var totalPtText = ("0000" + totalPt).slice(-4);
+            mixCtx.font = "20px DSEG7Classic";
+            mixCtx.fillStyle = "#f0f0f0";
+            mixCtx.textBaseline = "top";
+            mixCtx.textAlign = "right";
+            mixCtx.fillText(totalPtText, 345 + 64, 15);
+
+            targetElement.src = mixCtx.canvas.toDataURL();
+        };
         inputForm.onchange = updateData;
-        copyButton.onclick = copyToClipboad;
+        createButton.onclick = createMixedImate;
     </script>
 <script>
         function getParameterByName(name, url) {
@@ -242,7 +249,7 @@
             if (!results) return null;
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
+        };
         loadUrlParameter();
 </script>
 </body>
