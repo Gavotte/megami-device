@@ -131,6 +131,7 @@
         </form>
     </div>
     <div class="chart-output">
+        <input type="file" id="chart-output-photo" />
         <button id="chart-output-create">Create Image</button>
         <div>
             <img id="chart-output-image" crossorigin="anonymous" title="output-image-title" alt="output-image-alt" />
@@ -150,7 +151,8 @@
         };
         //
         var inputForm = document.getElementById("chart-input-form");
-        var createButton = document.getElementById("chart-output-create")
+        var createButton = document.getElementById("chart-output-create");
+        var selectPhoto = document.getElementById("chart-output-photo");
         var totalArea = document.getElementById("chart-total-001");
         var chartElement = document.getElementById("chart-001");
         var ctx = chartElement.getContext("2d");
@@ -323,7 +325,7 @@
 
             mixCtx.drawImage(background, 0, 0);
 
-            mixCtx.drawImage(contextToImage(ctx), xxxOptions.chartSize.top, xxxOptions.chartSize.left);
+            mixCtx.drawImage(contextToImage(ctx), xxxOptions.chartSize.left, xxxOptions.chartSize.top);
 
             var totalPt = getTotalPt();
             var totalPtText = ("0000" + totalPt).slice(-4);
@@ -334,6 +336,46 @@
             mixCtx.fillText(totalPtText, 345 + 64, 15);
 
             targetElement.src = mixCtx.canvas.toDataURL();
+
+            if(selectPhoto.files.length == 0) {
+                return;
+            }
+            var file = selectPhoto.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var dataUrl = e.target.result;
+                var photoImage = new Image();
+                photoImage.onload = function() {
+                    var photoSize = 400;
+                    var photoMargin = 4;
+                    var photoCtx = document.createElement('canvas').getContext('2d');
+                    photoCtx.canvas.width = 448 + photoSize + photoMargin * 2;
+                    photoCtx.canvas.height = 408;
+                    photoCtx.canvas.setAttribute('crossOrigin', 'anonymous');
+
+                    photoCtx.fillStyle = "#333";
+                    photoCtx.fillRect(0, 0, photoCtx.canvas.width, photoCtx.canvas.height);
+
+                    photoCtx.drawImage(contextToImage(mixCtx), photoSize + photoMargin * 2, 0);
+
+                    var photoInsertWidth = photoSize;
+                    var photoInsertHeight = photoSize;
+                    if (photoImage.width > photoImage.height) {
+                        photoInsertHeight = photoSize * photoImage.height / photoImage.width;
+                    } else if (photoImage.width < photoImage.height) {
+                        photoInsertWidth = photoSize * photoImage.width / photoImage.height;
+                    }
+
+                    photoCtx.drawImage(photoImage,
+                        photoMargin + ((photoSize - photoInsertWidth) / 2), 
+                        photoMargin + ((photoSize - photoInsertHeight) / 2), 
+                        photoInsertWidth, photoInsertHeight);
+
+                    targetElement.src = photoCtx.canvas.toDataURL();
+                };
+                photoImage.src = dataUrl;
+            };
+            reader.readAsDataURL(file);
         };
         inputForm.onchange = updateData;
         createButton.onclick = createMixedImate;
