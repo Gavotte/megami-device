@@ -6,50 +6,81 @@
     <title>BATTLE POINT</title>
     <style type="text/css">
         @font-face {
-	        font-family: 'DSEG7Classic';
-	        src: url(./images/DSEG7Classic-Regular.woff);
+            font-family: 'DSEG7Classic';
+            src: url(./images/DSEG7Classic-Regular.woff);
         }
+        
         .chart-container {
+            float: left;
             position: relative;
             background-color: #ccc;
             width: 448px;
             height: 408px;
         }
+        
         .chart-content {
             position: absolute;
             width: 100%;
             height: 100%;
         }
+        
         .chart-body {
+            margin: 42px 0 0 42px;
+            padding: 0;
+            width: 364px;
+            height: 364px;
+            /* XXX 公式の画像にピタリ合わせるための設定
             margin: 84px 0 0 82px;
             padding: 0;
             width: 284px;
             height: 284px;
+            */
         }
+        
         .chart-background {
             position: absolute;
             width: 100%;
             height: 100%;
-        }   
+        }
+        
         .chart-total {
             position: absolute;
-            margin:15px 0 0 345px;
+            margin: 15px 0 0 345px;
             text-align: right;
             background-color: #333;
             color: #f0f0f0;
-	        font-family: DSEG7Classic;
+            font-family: DSEG7Classic;
             font-size: 20px;
             opacity: 0.8;
             width: 64px;
             height: 20px;
         }
+        
         .chart-input {
-            margin-top: 1em;
+            float: left;
+            margin: 0.5em;
         }
+        
         .chart-input-params {
             width: 3em;
         }
-        </style>
+        
+        .chart-output {
+            float: left;
+        }
+        
+        dl {}
+        
+        dt {
+            width: 5em;
+            float: left;
+            clear: left;
+        }
+        
+        dd {
+            float: left;
+        }
+    </style>
 </head>
 
 <body>
@@ -66,16 +97,37 @@
     </div>
     <div class="chart-input">
         <form id="chart-input-form">
-            <input type="number" class="chart-input-params" id="chart-input-params-01" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-02" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-03" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-04" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-05" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-06" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-07" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-08" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-09" min="0" max="100" step="10" value="0" />
-            <input type="number" class="chart-input-params" id="chart-input-params-10" min="0" max="100" step="10" value="0" />
+            <dl>
+                <dt>近距離戦闘</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-01" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>中距離戦闘</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-02" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>遠距離戦闘</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-03" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>装甲・防御</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-04" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>重量　　　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-05" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>稼働時間　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-06" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>隠密　　　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-07" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>索敵　　　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-08" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>空中機動　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-09" min="0" max="100" step="10" value="0"
+                    /></dd>
+                <dt>地上機動　</dt>
+                <dd><input type="number" class="chart-input-params" id="chart-input-params-10" min="0" max="100" step="10" value="0"
+                    /></dd>
         </form>
     </div>
     <div class="chart-output">
@@ -86,10 +138,22 @@
     </div>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script>
+        //
+        var xxxOptions = {
+            drawChartLegend : true,
+            chartSize: {
+                width: 364,
+                height: 364,
+                top: 42,
+                left: 42
+            }
+        };
+        //
         var inputForm = document.getElementById("chart-input-form");
         var createButton = document.getElementById("chart-output-create")
         var totalArea = document.getElementById("chart-total-001");
-        var ctx = document.getElementById("chart-001").getContext("2d");
+        var chartElement = document.getElementById("chart-001");
+        var ctx = chartElement.getContext("2d");
         var data = {
             labels: [
                 "近距離戦闘", "中距離戦闘", "遠距離戦闘", "装甲・防御", "重量　　　",
@@ -111,40 +175,76 @@
         var options = {
             responsive: true,
             padding: 0,
+    pointLabelFontSize: 20,
             title: {
                 display: false
             },
             legend: {
-                display: false
+                display: false,
+                labels: {
+                    fontColor: "#ffa024"
+                }
             }, scale: {
                 display: false,
                 gridLines: {
                     display: false,
                     drawBorder: false,
+                    color: ["rgba(0, 0, 0, 0)","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024","#ffa024"],
+                    lineWidth: [0, 0.8, 0.2, 0.2, 0.2, 0.2, 0.8, 0.2, 0.2, 0.2, 0.2, 0.8]
+                },
+                angleLines: {
+                    color: "#ff0000",
+                    lineWidth: 0.3
                 },
                 scaleLabel: {
-                    display: false
+                    display: false,
+                    fontColor: "#ffa024"
+                },
+                pointLabels: {
+                    display: false,
+                    fontColor: "#ffa024"
                 },
                 ticks: {
                     display: false,
                     max: 100,
                     min: -15,
-                    stepSize: 1
+                    stepSize: 10,
+                    fontColor: "#ffa024"
                 },
                 beforeFit: function (scale) {
                 },
                 afterFit: function (scale) {
+                    // XXX この辺は公式に載っているグラフ画像にピタリさせるための設定
                     scale.drawingArea = scale.height / 2;
                     scale.xCenter = scale.width / 2;
                     scale.yCenter = scale.height / 2;
                 }
             }
         };
+        if(xxxOptions.drawChartLegend) {
+            options.scale.display = true;
+            options.scale.gridLines.display = true;
+            options.scale.gridLines.drawBorder = true;
+            options.scale.scaleLabel.display = true;
+            options.scale.pointLabels.display = true;
+            options.scale.beforeFit = function (scale) {
+                };
+            options.scale.afterFit = function (scale) {
+                };
+            chartElement.width = xxxOptions.chartSize.width;
+            chartElement.height = xxxOptions.chartSize.height;
+        }
         var myRadarChart = new Chart(ctx, {
             type: 'radar',
             data: data,
             options: options
         });
+        if(xxxOptions.drawChartLegend) {
+            // XXX 何かエレメントスタイルの値が変になる
+            ctx.canvas.width = xxxOptions.chartSize.width;
+            ctx.canvas.height = xxxOptions.chartSize.height;
+        }
+
         var currentTotalPt = 0;
         var targetTotalPt = 0;
         var setTotalPtInternal = function (totalPt) {
@@ -223,7 +323,7 @@
 
             mixCtx.drawImage(background, 0, 0);
 
-            mixCtx.drawImage(contextToImage(ctx), 84, 82);
+            mixCtx.drawImage(contextToImage(ctx), xxxOptions.chartSize.top, xxxOptions.chartSize.left);
 
             var totalPt = getTotalPt();
             var totalPtText = ("0000" + totalPt).slice(-4);
@@ -238,7 +338,7 @@
         inputForm.onchange = updateData;
         createButton.onclick = createMixedImate;
     </script>
-<script>
+    <script>
         function getParameterByName(name, url) {
             if (!url) {
                 url = window.location.href;
