@@ -6,6 +6,6 @@ Translated from
 - [Battle Point Graph](./battle-point-chart.html)
     - Displays Megami Battle Points in a graph
     - Can create .png images with an attached photo next to the graph.
-    - Is in english.
+    - Is in English.
 
 ## github.io
