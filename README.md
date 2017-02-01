@@ -1,11 +1,11 @@
-# megami-device
-メガミデバイス遊び用のリポジトリです。
+# megami-device-EN
+Translated from
 
-- [バトルポイントグラフ](./battle-point-chart.html)
-    - バトルポイントのグラフを表示するJavaScript
-    - を作ろうと思っていたのだけれど、公式に出てくるっぽい？
+[バトルポイントグラフ](https://7474.github.io/megami-device/battle-point-chart.html#params=0,0,0,0,0,0,0,0,0,0) by [7474](https://7474.github.io/megami-device/)
+
+- [Battle Point Graph](./battle-point-chart.html)
+    - Displays Megami Battle Points in a graph
+    - Can create .png images with an attached photo next to the graph.
+    - Is in english.
 
 ## github.io
-[github.ioページ](https://7474.github.io/megami-device/)
-
-極力上記で動作するようにしたいと思っています。

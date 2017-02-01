@@ -72,7 +72,7 @@
         dl {}
         
         dt {
-            width: 5em;
+            width: 8em;
             float: left;
             clear: left;
         }
@@ -98,34 +98,34 @@
     <div class="chart-input">
         <form id="chart-input-form">
             <dl>
-                <dt>近距離戦闘</dt>
+                <dt>Close Range</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-01" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>中距離戦闘</dt>
+                <dt>Mid Range</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-02" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>遠距離戦闘</dt>
+                <dt>Long Range</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-03" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>装甲・防御</dt>
+                <dt>Defense + Armor</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-04" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>重量　　　</dt>
+                <dt>Weight</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-05" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>稼働時間　</dt>
+                <dt>Active Time</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-06" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>隠密　　　</dt>
+                <dt>Stealth</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-07" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>索敵　　　</dt>
+                <dt>Recon</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-08" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>空中機動　</dt>
+                <dt>Air Mobility</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-09" min="0" max="100" step="10" value="0"
                     /></dd>
-                <dt>地上機動　</dt>
+                <dt>Ground Mobility</dt>
                 <dd><input type="number" class="chart-input-params" id="chart-input-params-10" min="0" max="100" step="10" value="0"
                     /></dd>
         </form>
@@ -158,8 +158,8 @@
         var ctx = chartElement.getContext("2d");
         var data = {
             labels: [
-                "近距離戦闘", "中距離戦闘", "遠距離戦闘", "装甲・防御", "重量　　　",
-                "稼働時間　", "隠密　　　", "索敵　　　", "空中機動　", "地上機動　"],
+                "Close Range", "Mid Range", "Long Range", "Defense + Armor", "Weight",
+                "Active Time", "Stealth", "Recon", "Air Mobility", "Ground Mobility"],
             datasets: [
                 {
                     label: "MEGAMI's Battle Points",
